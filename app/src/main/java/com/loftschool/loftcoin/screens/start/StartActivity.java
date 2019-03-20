@@ -73,6 +73,7 @@ public class StartActivity extends AppCompatActivity implements StartView {
     @Override
     public void navigateToMainScreen() {
         MainActivity.start(this);
+        finish();
     }
 
     private void startAnimations() {

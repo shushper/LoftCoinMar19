@@ -1,10 +1,8 @@
-package com.loftschool.loftcoin.screens.start;
-
+package com.loftschool.loftcoin.screens.rate;
 
 import com.loftschool.loftcoin.data.api.Api;
 import com.loftschool.loftcoin.data.api.model.RateResponse;
 import com.loftschool.loftcoin.data.prefs.Prefs;
-import com.loftschool.loftcoin.utils.Fiat;
 
 import androidx.annotation.Nullable;
 import retrofit2.Call;
@@ -12,49 +10,61 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class StartPresenterImpl implements StartPresenter {
+public class RatePresenterImpl implements RatePresenter {
 
     private Prefs prefs;
     private Api api;
 
     @Nullable
-    private StartView view;
+    private RateView view;
 
-    public StartPresenterImpl(Prefs prefs, Api api) {
+
+    public RatePresenterImpl(Prefs prefs, Api api) {
         this.prefs = prefs;
         this.api = api;
     }
 
     @Override
-    public void attachView(StartView view) {
+    public void attachView(RateView view) {
         this.view = view;
     }
 
     @Override
     public void detachView() {
-        this.view = null;
+        view = null;
     }
 
     @Override
-    public void loadRates() {
-
-        Fiat fiat = prefs.getFiatCurrency();
+    public void getRate() {
 
         Call<RateResponse> call = api.rates(Api.CONVERT);
 
         call.enqueue(new Callback<RateResponse>() {
             @Override
             public void onResponse(Call<RateResponse> call, Response<RateResponse> response) {
-                if (view != null) {
-                    view.navigateToMainScreen();
+
+                RateResponse body = response.body();
+
+
+                if (view != null && body != null) {
+                    view.setCoins(body.data);
+                    view.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(Call<RateResponse> call, Throwable t) {
                 Timber.e(t);
+
+                if (view != null) {
+                    view.setRefreshing(false);
+                }
             }
         });
+    }
 
+    @Override
+    public void onRefresh() {
+        getRate();
     }
 }
