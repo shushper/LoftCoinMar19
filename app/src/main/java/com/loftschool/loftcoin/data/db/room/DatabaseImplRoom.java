@@ -6,6 +6,8 @@ import com.loftschool.loftcoin.data.db.model.CoinEntity;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 public class DatabaseImplRoom implements Database {
 
     private AppDatabase appDatabase;
@@ -20,7 +22,7 @@ public class DatabaseImplRoom implements Database {
     }
 
     @Override
-    public List<CoinEntity> getCoins() {
+    public Flowable<List<CoinEntity>> getCoins() {
         return appDatabase.coinDao().getCoins();
     }
 }
