@@ -9,6 +9,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.loftschool.loftcoin.R;
 import com.loftschool.loftcoin.screens.converter.ConverterFragment;
 import com.loftschool.loftcoin.screens.rate.RateFragment;
+import com.loftschool.loftcoin.screens.wallets.WalletsFragment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnNavigationItemReselectedListener(menuItem -> {
 
         });
+
+        if (savedInstanceState == null) {
+            bottomNavigation.setSelectedItemId(R.id.menu_item_rate);
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_accounts:
-
+                    showWalletsFragment();
                     return true;
 
                 case R.id.menu_item_rate:
@@ -61,13 +66,13 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //    private void showWalletsFragment() {
-//        WalletsFragment fragment = new WalletsFragment();
-//        FragmentManager fm = getSupportFragmentManager();
-//        FragmentTransaction transaction = fm.beginTransaction();
-//        transaction.replace(R.id.fragment_container, fragment);
-//        transaction.commit();
-//    }
+    private void showWalletsFragment() {
+        WalletsFragment fragment = new WalletsFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.commit();
+    }
 
     private void showRateFragment() {
         RateFragment fragment = new RateFragment();

@@ -31,4 +31,7 @@
 
     <string name="currencies_bottom_sheet_title">Select currency</string>
     <string name="currencies_bottom_sheet_currency_name">%s | %s</string>
+
+    <string name="accounts_screen_title">Wallets</string>
+    <string name="wallets_menu_item_new_wallet">New wallet</string>
 </resources>
