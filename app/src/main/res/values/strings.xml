@@ -34,4 +34,7 @@
     <string name="currencies_bottom_sheet_title">Выбор валюты</string>
     <string name="currencies_bottom_sheet_currency_name">%s | %s</string>
 
+    <string name="accounts_screen_title">Кошельки</string>
+    <string name="wallets_menu_item_new_wallet">Новый кошелёк</string>
+
 </resources>
