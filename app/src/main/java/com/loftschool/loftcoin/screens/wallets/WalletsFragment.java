@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
@@ -49,6 +50,8 @@ public class WalletsFragment extends Fragment implements CurrenciesBottomSheetLi
     ViewGroup newWallet;
 
     private WalletsPagerAdapter walletsPagerAdapter;
+    private TransactionsAdapter transactionsAdapter;
+
     private WalletsViewModel viewModel;
 
     @Override
@@ -60,6 +63,7 @@ public class WalletsFragment extends Fragment implements CurrenciesBottomSheetLi
         Prefs prefs = ((App) getActivity().getApplication()).getPrefs();
 
         walletsPagerAdapter = new WalletsPagerAdapter(prefs);
+        transactionsAdapter = new TransactionsAdapter(prefs);
     }
 
     @Override
@@ -77,6 +81,10 @@ public class WalletsFragment extends Fragment implements CurrenciesBottomSheetLi
 
         toolbar.setTitle(R.string.accounts_screen_title);
         toolbar.inflateMenu(R.menu.menu_wallets);
+
+        transactionsRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        transactionsRecycler.setHasFixedSize(true);
+        transactionsRecycler.setAdapter(transactionsAdapter);
 
 
         int screenWidth = getScreenWidth();
@@ -112,6 +120,13 @@ public class WalletsFragment extends Fragment implements CurrenciesBottomSheetLi
             return true;
         });
 
+        walletsPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                viewModel.onWalletChanged(position);
+            }
+        });
+
     }
 
     private void initInputs() {
@@ -130,6 +145,10 @@ public class WalletsFragment extends Fragment implements CurrenciesBottomSheetLi
 
         viewModel.wallets().observe(this, wallets -> {
             walletsPagerAdapter.setWallets(wallets);
+        });
+
+        viewModel.transactions().observe(this, transactionModels -> {
+            transactionsAdapter.setTransactions(transactionModels);
         });
 
     }
