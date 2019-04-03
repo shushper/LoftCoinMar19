@@ -21,7 +21,8 @@ public class RatePresenterImpl implements RatePresenter {
 
     private Prefs prefs;
     private Api api;
-    private Database database;
+    private Database mainDatabase;
+    private Database workerDatabase;
     private CoinEntityMapper coinEntityMapper;
 
     @Nullable
@@ -30,31 +31,37 @@ public class RatePresenterImpl implements RatePresenter {
     private CompositeDisposable disposables = new CompositeDisposable();
 
 
-    public RatePresenterImpl(Prefs prefs, Api api, Database database, CoinEntityMapper coinEntityMapper) {
+    public RatePresenterImpl(Prefs prefs,
+                             Api api,
+                             Database mainDatabase,
+                             Database workerDatabase,
+                             CoinEntityMapper coinEntityMapper) {
+
         this.prefs = prefs;
         this.api = api;
-        this.database = database;
+        this.mainDatabase = mainDatabase;
+        this.workerDatabase = workerDatabase;
         this.coinEntityMapper = coinEntityMapper;
     }
 
     @Override
     public void attachView(RateView view) {
         this.view = view;
+        mainDatabase.open();
     }
 
     @Override
     public void detachView() {
         disposables.dispose();
         view = null;
+        mainDatabase.close();
     }
 
     @Override
     public void getRate() {
 
 
-        Disposable disposable = database.getCoins()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        Disposable disposable = mainDatabase.getCoins()
                 .subscribe(coinEntities -> {
                     if (view != null) {
                         view.setCoins(coinEntities);
@@ -74,7 +81,11 @@ public class RatePresenterImpl implements RatePresenter {
                     List<CoinEntity> coinEntities = coinEntityMapper.map(coins);
                     return coinEntities;
                 })
-                .doOnNext(coinEntities -> database.saveCoins(coinEntities))
+                .doOnNext(coinEntities -> {
+                    workerDatabase.open();
+                    workerDatabase.saveCoins(coinEntities);
+                    workerDatabase.close();
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         coinEntities -> {
